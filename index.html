@@ -45,7 +45,7 @@ nav{position:fixed;top:0;width:100%;z-index:100;padding:20px 40px;display:flex;j
 .hero-split{display:flex;align-items:center;gap:60px;max-width:1000px;margin:0 auto}
 .hero-left{flex:1;text-align:left}
 .hero-right{flex-shrink:0}
-.hero-logo{width:100px;height:100px;border-radius:22px;margin-bottom:24px;animation:float 6s ease-in-out infinite}
+.hero-logo{width:140px;height:140px;border-radius:28px;margin-bottom:24px;animation:float 6s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 .hero h1{font-family:'Playfair Display',serif;font-size:clamp(40px,6vw,64px);font-weight:400;letter-spacing:-1px;line-height:1.1;margin-bottom:16px}
 .hero h1 span{color:var(--accent)}
@@ -150,6 +150,25 @@ section{padding:100px 20px;position:relative;z-index:1}
 .waitlist-note{font-size:12px;color:var(--text-t);margin-top:12px}
 .waitlist-success{display:none;font-size:15px;color:var(--accent);margin-top:20px}
 
+/* ─── Guides / Shop ─── */
+.guides-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.guide-card{padding:0;border-radius:20px;background:var(--surface);border:1px solid var(--border);display:flex;flex-direction:column;transition:all .3s;position:relative;overflow:hidden}
+.guide-card:hover{border-color:rgba(93,202,165,.2);transform:translateY(-4px)}
+.guide-img{width:100%;height:auto;display:block;border-radius:20px 20px 0 0}
+.guide-badge-save{display:inline-block;width:fit-content;padding:3px 10px;border-radius:8px;font-size:10px;font-weight:500;background:rgba(255,215,0,.15);color:#FFD700;margin-bottom:8px}
+.guide-card h3{font-size:16px;font-weight:500;margin:0 0 8px;color:#fff;padding:0 20px}
+.guide-card p{font-size:13px;color:var(--text-s);line-height:1.6;flex:1;padding:0 20px}
+.guide-price{font-size:24px;font-weight:500;color:#fff;margin:16px 20px 12px}
+.guide-btn{display:inline-block;text-align:center;padding:12px 24px;border-radius:12px;background:var(--accent);color:var(--bg);font-size:14px;font-weight:500;text-decoration:none;transition:transform .2s;margin:0 20px 20px}
+.guide-btn:hover{transform:scale(1.03)}
+.bundle-img{width:100%;max-width:300px;height:auto;border-radius:12px}
+.bundle-card{margin-top:16px;padding:28px;border-radius:20px;background:linear-gradient(135deg,rgba(255,215,0,.04),rgba(93,202,165,.04));border:1px solid rgba(255,215,0,.15);display:flex;justify-content:space-between;align-items:center;gap:24px}
+.bundle-left{flex:1}
+.bundle-left h3{font-size:18px;font-weight:500;color:#fff;margin-bottom:6px}
+.bundle-left p{font-size:13px;color:var(--text-s);line-height:1.6}
+.bundle-right{text-align:center;flex-shrink:0}
+.bundle-old{font-size:16px;color:var(--text-t);text-decoration:line-through}
+
 /* ─── Footer ─── */
 footer{padding:40px 20px;border-top:1px solid var(--border);text-align:center}
 .footer-brand{font-size:13px;letter-spacing:3px;font-weight:500;color:var(--text-s);margin-bottom:8px}
@@ -166,7 +185,8 @@ footer{padding:40px 20px;border-top:1px solid var(--border);text-align:center}
   .hero-left{text-align:center}
   .hero-sub{margin-left:auto;margin-right:auto}
   .hero-badges{justify-content:center}
-  .problem-grid,.features-grid,.pricing-grid{grid-template-columns:1fr}
+  .problem-grid,.features-grid,.pricing-grid,.guides-grid{grid-template-columns:1fr}
+  .bundle-card{flex-direction:column;text-align:center}
   .phone-section{flex-direction:column;text-align:center}
   .phone-frame{margin:0 auto}
   .waitlist-form{flex-direction:column}
@@ -189,14 +209,15 @@ footer{padding:40px 20px;border-top:1px solid var(--border);text-align:center}
 <!-- Nav -->
 <nav>
   <div class="nav-logo">
-    <img src="" alt="STILLE" id="nav-logo-img" onerror="this.style.display='none'">
+    <img src="logo.png" alt="STILLE" id="nav-logo-img" style="width:36px;height:36px;border-radius:8px">
     <span class="nav-brand">STILLE</span>
   </div>
   <div class="nav-links">
     <a href="#features" class="nav-link" data-en="Features" data-de="Features">Features</a>
     <a href="#pricing" class="nav-link" data-en="Pricing" data-de="Preise">Pricing</a>
+    <a href="#guides" class="nav-link" data-en="Guides" data-de="Guides">Guides</a>
     <button class="lang-toggle" onclick="toggleLang()">DE</button>
-    <a href="#waitlist" class="nav-cta" data-en="Get Early Access" data-de="Frühen Zugang sichern">Get Early Access</a>
+    <a href="#guides" class="nav-cta" data-en="Get Guides" data-de="Guides holen">Get Guides</a>
   </div>
 </nav>
 
@@ -204,7 +225,7 @@ footer{padding:40px 20px;border-top:1px solid var(--border);text-align:center}
 <section class="hero">
   <div class="hero-split">
     <div class="hero-left">
-      <img src="" alt="STILLE Logo" class="hero-logo" id="hero-logo-img" onerror="this.style.display='none'">
+      <img src="logo.png" alt="STILLE Logo" class="hero-logo" id="hero-logo-img">
       <h1 data-en="Meditation.<br><span>Simplified.</span>" data-de="Meditation.<br><span>Vereinfacht.</span>">Meditation.<br><span>Simplified.</span></h1>
       <p class="hero-sub" data-en="The timer that does one thing perfectly. No courses. No social features. No upsells. Just you, a timer, and a gong." data-de="Der Timer der eine Sache perfekt macht. Keine Kurse. Kein Social. Keine Upsells. Nur du, ein Timer und ein Gong.">The timer that does one thing perfectly. No courses. No social features. No upsells. Just you, a timer, and a gong.</p>
       
@@ -219,7 +240,7 @@ footer{padding:40px 20px;border-top:1px solid var(--border);text-align:center}
         <a href="#" class="store-badge">
           <svg viewBox="0 0 24 24"><path d="M3.18 23.76c-.42-.24-.68-.72-.68-1.28V1.52c0-.56.26-1.04.68-1.28l11.1 11.76L3.18 23.76zm14.58-8.44l-2.82-2.98 2.82-2.98 3.18 1.84c.9.52.9 1.38 0 1.9l-3.18 2.22zm-3.5-2.98L4.42 2.12l10.4 6.02-0.56 4.2zm0 0l.56 4.2-10.4 6.02 9.84-10.22z"/></svg>
           <div class="store-badge-text">
-            <div class="store-badge-small" data-en="COMING SOON ON" data-de="BALD VERFÜGBAR">COMING SOON ON</div>
+            <div class="store-badge-small" data-en="DOWNLOAD ON" data-de="HERUNTERLADEN AUF">DOWNLOAD ON</div>
             <div class="store-badge-big">Google Play</div>
           </div>
         </a>
@@ -393,18 +414,48 @@ footer{padding:40px 20px;border-top:1px solid var(--border);text-align:center}
   </div>
 </section>
 
-<!-- Waitlist -->
-<section class="waitlist" id="waitlist">
+<!-- Guides / Shop -->
+<section id="guides">
   <div class="container fade-in">
-    <div class="section-label" data-en="Early Access" data-de="Früher Zugang">Early Access</div>
-    <h2 class="section-title" style="margin-left:auto;margin-right:auto" data-en="Be the first to find stillness." data-de="Finde als Erster die Stille.">Be the first to find stillness.</h2>
-    <p class="section-desc" style="margin:12px auto 0" data-en="Join the waitlist. We'll let you know when STILLE is available." data-de="Trag dich ein. Wir informieren dich, wenn STILLE verfügbar ist.">Join the waitlist. We'll let you know when STILLE is available.</p>
-    <form class="waitlist-form" onsubmit="return handleWaitlist(event)">
-      <input type="email" class="waitlist-input" placeholder="your@email.com" required id="waitlist-email">
-      <button type="submit" class="waitlist-btn" data-en="Notify me" data-de="Benachrichtige mich">Notify me</button>
-    </form>
-    <p class="waitlist-note" data-en="No spam. Just one email when we launch." data-de="Kein Spam. Nur eine E-Mail zum Launch.">No spam. Just one email when we launch.</p>
-    <p class="waitlist-success" id="waitlist-success" data-en="You're on the list. See you at launch." data-de="Du bist auf der Liste. Bis zum Launch.">You're on the list. See you at launch. ✓</p>
+    <div class="section-label" data-en="Digital Guides" data-de="Digitale Guides">Digital Guides</div>
+    <h2 class="section-title" data-en="Deepen your practice." data-de="Vertiefe deine Praxis.">Deepen your practice.</h2>
+    <p class="section-desc" data-en="Beautiful PDF guides to complement your meditation journey with STILLE." data-de="Schöne PDF-Guides als Begleiter für deine Meditations-Reise mit STILLE.">Beautiful PDF guides to complement your meditation journey with STILLE.</p>
+    <div class="guides-grid">
+      <div class="guide-card">
+        <img src="meditation-guide.png" alt="Meditation Guide" class="guide-img">
+        <h3 data-en="Meditation Guide for Beginners" data-de="Meditations-Guide für Anfänger">Meditation Guide for Beginners</h3>
+        <p data-en="5 proven techniques, common mistakes to avoid, and how to build a lasting practice. 20 pages." data-de="5 bewährte Techniken, häufige Fehler vermeiden, und eine dauerhafte Praxis aufbauen. 20 Seiten.">5 proven techniques, common mistakes to avoid, and how to build a lasting practice. 20 pages.</p>
+        <div class="guide-price">€4.99</div>
+        <a href="https://buy.stripe.com/dRm8wJ4yn5rU1pIbTo2oE00" class="guide-btn" data-en="Get the Guide" data-de="Guide holen">Get the Guide</a>
+      </div>
+      <div class="guide-card">
+        <img src="breathing-techniques.png" alt="Breathing Techniques" class="guide-img">
+        <h3 data-en="Breathing Techniques Handbook" data-de="Atemtechniken Handbuch">Breathing Techniques Handbook</h3>
+        <p data-en="8 powerful techniques for sleep, focus, energy, and calm. Step-by-step with illustrations. 30 pages." data-de="8 kraftvolle Techniken für Schlaf, Fokus, Energie und Ruhe. Schritt für Schritt mit Illustrationen. 30 Seiten.">8 powerful techniques for sleep, focus, energy, and calm. Step-by-step with illustrations. 30 pages.</p>
+        <div class="guide-price">€9.99</div>
+        <a href="https://buy.stripe.com/4gM6oB1mb9Ia6K21eK2oE01" class="guide-btn" data-en="Get the Handbook" data-de="Handbuch holen">Get the Handbook</a>
+      </div>
+      <div class="guide-card">
+        <img src="30-day-challenge.png" alt="30-Day Challenge" class="guide-img">
+        <h3 data-en="30-Day Meditation Challenge" data-de="30-Tage Meditations-Challenge">30-Day Meditation Challenge</h3>
+        <p data-en="Daily exercises, reflection prompts, and progress tracking. Build an unbreakable habit. 45 pages." data-de="Tägliche Übungen, Reflexionsfragen und Fortschrittstracking. Baue eine unerschütterliche Gewohnheit auf. 45 Seiten.">Daily exercises, reflection prompts, and progress tracking. Build an unbreakable habit. 45 pages.</p>
+        <div class="guide-price">€14.99</div>
+        <a href="https://buy.stripe.com/cNi6oB2qf7A20lEe1w2oE03" class="guide-btn" data-en="Get the Challenge" data-de="Challenge holen">Get the Challenge</a>
+      </div>
+    </div>
+    <div class="bundle-card">
+      <div class="bundle-left">
+        <img src="bundle.png" alt="Complete Bundle" class="bundle-img">
+      </div>
+      <div class="bundle-right">
+        <div class="guide-badge-save" data-en="Save 17%" data-de="17% sparen">Save 17%</div>
+        <h3 data-en="Complete Bundle — All 3 Guides" data-de="Komplett-Bundle — Alle 3 Guides">Complete Bundle — All 3 Guides</h3>
+        <p data-en="Everything you need to start, deepen, and sustain your meditation practice. 95+ pages." data-de="Alles was du brauchst um deine Meditationspraxis zu starten, zu vertiefen und beizubehalten. 95+ Seiten.">Everything you need to start, deepen, and sustain your meditation practice. 95+ pages.</p>
+        <div class="bundle-old">€29.97</div>
+        <div class="guide-price" style="margin:0">€24.99</div>
+        <a href="https://buy.stripe.com/9B64gt9SH07A3xQ8Hc2oE02" class="guide-btn" style="margin-top:12px" data-en="Get the Bundle" data-de="Bundle holen">Get the Bundle</a>
+      </div>
+    </div>
   </div>
 </section>
 
