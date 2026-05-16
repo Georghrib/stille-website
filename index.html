@@ -218,26 +218,28 @@ footer{padding:4rem 5rem;border-top:1px solid var(--border);position:relative;z-
   footer,.fbottom{padding:2rem 1.5rem;flex-direction:column}
 }
 
+
 /* SOUND BUTTON */
-.sound-btn{
+.snd-btn{
   position:fixed;bottom:2rem;right:2rem;z-index:200;
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(20,14,8,0.85);backdrop-filter:blur(12px);
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(16,10,4,0.88);backdrop-filter:blur(14px);
   border:1px solid var(--border-gold);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:all 0.25s;
+  transition:background 0.25s,border-color 0.25s;
 }
-.sound-btn:hover{background:rgba(201,169,110,0.15);border-color:var(--gold)}
-.sound-btn svg{width:18px;height:18px;color:var(--gold)}
-.sound-btn .ripple{
-  position:absolute;inset:-6px;border-radius:50%;
-  border:1px solid rgba(201,169,110,0.3);
-  animation:soundpulse 2.5s ease-out infinite;opacity:0;
+.snd-btn:hover{background:rgba(201,169,110,0.18);border-color:var(--gold)}
+.snd-btn svg{width:20px;height:20px;color:var(--gold);pointer-events:none}
+.snd-pulse{
+  position:absolute;inset:-7px;border-radius:50%;
+  border:1px solid rgba(201,169,110,0.35);
+  animation:sp 2.4s ease-out infinite;opacity:0;pointer-events:none;
 }
-.sound-btn .ripple:nth-child(2){animation-delay:0.8s}
-.sound-btn .ripple:nth-child(3){animation-delay:1.6s}
-.sound-btn.muted .ripple{animation:none;opacity:0}
-@keyframes soundpulse{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.7);opacity:0}}
+.snd-pulse:nth-child(2){animation-delay:0.8s}
+.snd-pulse:nth-child(3){animation-delay:1.6s}
+@keyframes sp{0%{transform:scale(1);opacity:0.7}100%{transform:scale(1.9);opacity:0}}
+.snd-btn.off .snd-pulse{animation:none}
+
 </style>
 </head>
 <body>
@@ -584,119 +586,128 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('visible'));
 
 
-// ── AMBIENT SOUND ──────────────────────────────────────────
+
+
+
+
+
+
+
+
+// ── CRYSTAL BOWL — soft, airy, high ────────────────────────
 (function() {
+  var btnEl = document.createElement('button');
+  btnEl.className = 'snd-btn off';
+  btnEl.title = 'Sound an/aus';
+  btnEl.innerHTML = [
+    '<div class="snd-pulse"></div><div class="snd-pulse"></div><div class="snd-pulse"></div>',
+    '<svg id="sndOn" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">',
+      '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>',
+      '<path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+    '</svg>',
+    '<svg id="sndOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">',
+      '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>',
+      '<line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>',
+    '</svg>',
+  ].join('');
+  document.body.appendChild(btnEl);
+
   var ctx = null, master = null, playing = false;
 
-  function build() {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    master = ctx.createGain();
-    master.gain.value = 0;
-    master.connect(ctx.destination);
+  function strike(freq, vol, when) {
+    // Each "strike" = a crystal bowl hit: sharp attack, very long exponential decay
+    var osc  = ctx.createOscillator();
+    var osc2 = ctx.createOscillator(); // slight detune for shimmer
+    var g    = ctx.createGain();
 
-    // Reverb via convolver simulation with delay network
-    var freqs = [
-      [220.0, 0.20],
-      [440.5, 0.13],
-      [659.3, 0.08],
-      [880.0, 0.05],
-      [1100.0, 0.03]
-    ];
+    osc.type  = 'sine'; osc.frequency.value  = freq;
+    osc2.type = 'sine'; osc2.frequency.value = freq * 1.0007; // micro-detune = shimmer
 
-    freqs.forEach(function(pair) {
-      var f = pair[0], g = pair[1];
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      var lfo = ctx.createOscillator();
-      var lfoG = ctx.createGain();
-      var dly = ctx.createDelay(4);
-      var dlyG = ctx.createGain();
+    // Attack: instant. Decay: very slow exponential (crystal bowl sustain)
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(vol, when + 0.015);       // fast attack
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 14);  // 14s decay
 
-      osc.type = 'sine';
-      osc.frequency.value = f;
-      lfo.type = 'sine';
-      lfo.frequency.value = 0.12 + Math.random() * 0.1;
-      lfoG.gain.value = g * 0.3;
-      gain.gain.value = g;
-      dly.delayTime.value = 0.4;
-      dlyG.gain.value = 0.3;
+    osc.connect(g);  osc2.connect(g);
+    g.connect(master);
 
-      lfo.connect(lfoG);
-      lfoG.connect(gain.gain);
-      osc.connect(gain);
-      gain.connect(master);
-      gain.connect(dly);
-      dly.connect(dlyG);
-      dlyG.connect(master);
+    osc.start(when);  osc.stop(when + 14);
+    osc2.start(when); osc2.stop(when + 14);
+  }
 
-      osc.start();
-      lfo.start();
+  function scheduleLoop() {
+    if (!playing) return;
+    var now = ctx.currentTime;
+
+    // Crystal bowl frequencies (high, glassy): C6, E6, G6 — a soft major triad
+    var notes = [1046.5, 1318.5, 1568.0]; // C6, E6, G6
+    var gaps  = [0, 5, 9]; // seconds between each note in the chord
+
+    notes.forEach(function(f, i) {
+      strike(f, 0.055 - i * 0.01, now + gaps[i]);
+      // Gentle octave ghost — very quiet
+      strike(f * 2, 0.012, now + gaps[i] + 0.05);
     });
 
-    // Deep drone
-    var drone = ctx.createOscillator();
-    var droneG = ctx.createGain();
-    drone.type = 'sine';
-    drone.frequency.value = 55;
-    droneG.gain.value = 0.055;
-    drone.connect(droneG);
-    droneG.connect(master);
-    drone.start();
+    // Repeat cycle every 20 seconds — long resonance, space between rings
+    setTimeout(scheduleLoop, 20000);
   }
 
-  function fadeIn() {
-    master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-    master.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 2.5);
+  function buildAudio() {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    master = ctx.createGain();
+    master.gain.value = 0;
+
+    // Gentle highpass to keep it airy
+    var hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 300;
+
+    // Reverb via feedback delay — gives space
+    var delay  = ctx.createDelay(5);
+    var delayG = ctx.createGain();
+    delay.delayTime.value = 1.8;
+    delayG.gain.value     = 0.28;
+
+    master.connect(hp);
+    hp.connect(ctx.destination);
+    master.connect(delay);
+    delay.connect(delayG);
+    delayG.connect(master); // feedback loop
   }
 
-  function fadeOut() {
-    master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.8);
+  function ramp(to, secs) {
+    var now = ctx.currentTime;
+    master.gain.cancelScheduledValues(now);
+    master.gain.setValueAtTime(master.gain.value, now);
+    master.gain.linearRampToValueAtTime(to || 0.0001, now + secs);
   }
 
-  var btn = document.getElementById('soundBtn');
-  var iconOn = document.getElementById('iconOn');
-  var iconOff = document.getElementById('iconOff');
-
-  if (!btn) return;
-
-  btn.addEventListener('click', function() {
+  btnEl.addEventListener('click', function() {
     try {
-      if (!ctx) build();
+      if (!ctx) buildAudio();
       if (ctx.state === 'suspended') ctx.resume();
       playing = !playing;
+      var on  = document.getElementById('sndOn');
+      var off = document.getElementById('sndOff');
       if (playing) {
-        fadeIn();
-        btn.classList.remove('muted');
-        iconOn.style.display = 'block';
-        iconOff.style.display = 'none';
+        ramp(1.0, 2.0);
+        scheduleLoop();
+        btnEl.classList.remove('off');
+        if (on)  on.style.display  = 'block';
+        if (off) off.style.display = 'none';
       } else {
-        fadeOut();
-        btn.classList.add('muted');
-        iconOn.style.display = 'none';
-        iconOff.style.display = 'block';
+        ramp(0, 3.5);
+        btnEl.classList.add('off');
+        if (on)  on.style.display  = 'none';
+        if (off) off.style.display = 'block';
       }
-    } catch(e) { console.error('Audio error:', e); }
+    } catch(e) { console.error('Audio:', e); }
   });
 })();
+
 </script>
 
-<button class="sound-btn muted" id="soundBtn" title="Ambient Sound">
-  <div class="ripple"></div>
-  <div class="ripple"></div>
-  <div class="ripple"></div>
-  <!-- Sound ON icon -->
-  <svg id="iconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none">
-    <path d="M9 9H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V5L9 9z"/>
-    <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/>
-  </svg>
-  <!-- Sound OFF icon -->
-  <svg id="iconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <path d="M9 9H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V5L9 9z"/>
-    <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
-  </svg>
-</button>
 
 </body></html>
