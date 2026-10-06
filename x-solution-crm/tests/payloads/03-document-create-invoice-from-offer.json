@@ -1,0 +1,28 @@
+{
+  "event": "document.create",
+  "data": {
+    "id": 7002,
+    "type": "INVOICE",
+    "number": "RE-5001",
+    "title": "Online-Reservierung & Website-Wartung – 1. Rate",
+    "customer_id": 501,
+    "amount": 120000,
+    "amount_net": 100000,
+    "currency": "EUR",
+    "document_date": "2026-10-06",
+    "due_date": "2026-10-20",
+    "paid_at": null,
+    "is_draft": false,
+    "status": null,
+    "cancel_id": null,
+    "ref_id": 7001,
+    "edited_at": "2026-10-06 08:00:00",
+    "created_at": "2026-10-06 08:00:00",
+    "customer_snapshot": {
+      "company_name": "Gasthof Alpenrose",
+      "emails": [
+        "info@gasthof-alpenrose.at"
+      ]
+    }
+  }
+}

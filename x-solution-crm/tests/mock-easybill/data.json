@@ -1,0 +1,20 @@
+{
+  "customers": {
+    "501": {"id": 501, "number": "K-501", "company_name": "Gasthof Alpenrose", "first_name": "Johanna", "last_name": "Rainer", "emails": ["info@gasthof-alpenrose.at"], "phone_1": "+43 5412 63 210", "street": "Dorfplatz 5", "zip_code": "6460", "city": "Imst", "country": "AT", "vat_identifier": "ATU12345678"},
+    "502": {"id": 502, "number": "K-502", "company_name": "", "first_name": "Peter", "last_name": "Novak", "emails": ["peter.novak@example.at"], "street": "Lindengasse 12", "zip_code": "1070", "city": "Wien", "country": "AT"},
+    "880000": {"id": 880000, "number": "K-100", "company_name": "Alpenblick Hotels GmbH", "emails": ["office@alpenblick-hotels.at"], "city": "Innsbruck", "country": "AT"}
+  },
+  "documents": [
+    {"id": 7001, "type": "OFFER", "number": "AN-4001", "title": "Online-Reservierung & Website-Wartung", "customer_id": 501, "amount": 1440000, "amount_net": 1200000, "currency": "EUR", "document_date": "2026-10-05", "due_date": null, "paid_at": null, "is_draft": false, "status": null, "cancel_id": null, "ref_id": null, "edited_at": "2026-10-05 09:12:00", "created_at": "2026-10-05 09:10:00",
+     "customer_snapshot": {"company_name": "Gasthof Alpenrose", "first_name": "Johanna", "last_name": "Rainer", "emails": ["info@gasthof-alpenrose.at"]},
+     "items": [{"description": "Website-Wartung 24 Monate", "quantity": 24, "single_price_net": 50000}]},
+    {"id": 7002, "type": "INVOICE", "number": "RE-5001", "title": "Online-Reservierung & Website-Wartung – 1. Rate", "customer_id": 501, "amount": 120000, "amount_net": 100000, "currency": "EUR", "document_date": "2026-10-06", "due_date": "2026-10-20", "paid_at": null, "is_draft": false, "status": null, "cancel_id": null, "ref_id": 7001, "edited_at": "2026-10-06 08:00:00", "created_at": "2026-10-06 08:00:00",
+     "customer_snapshot": {"company_name": "Gasthof Alpenrose", "emails": ["info@gasthof-alpenrose.at"]}},
+    {"id": 7003, "type": "INVOICE", "number": "RE-5002", "title": "Managed Hosting Oktober", "customer_id": 880000, "amount": 174000, "amount_net": 145000, "currency": "EUR", "document_date": "2026-10-03", "due_date": "2026-10-17", "paid_at": "2026-10-05", "is_draft": false, "status": null, "cancel_id": null, "ref_id": null, "edited_at": "2026-10-05 14:00:00", "created_at": "2026-10-03 10:00:00",
+     "customer_snapshot": {"company_name": "Alpenblick Hotels GmbH", "emails": ["office@alpenblick-hotels.at"]}},
+    {"id": 7004, "type": "CREDIT", "number": "GS-2001", "title": "Gutschrift Kulanz", "customer_id": 502, "amount": 24000, "amount_net": 20000, "currency": "EUR", "document_date": "2026-10-02", "due_date": null, "paid_at": null, "is_draft": false, "status": null, "cancel_id": null, "ref_id": null, "edited_at": "2026-10-02 11:00:00", "created_at": "2026-10-02 11:00:00",
+     "customer_snapshot": {"first_name": "Peter", "last_name": "Novak", "emails": ["peter.novak@example.at"]}},
+    {"id": 7005, "type": "OFFER", "number": "AN-4002", "title": "IT-Sicherheitscheck", "customer_id": 502, "amount": 420000, "amount_net": 350000, "currency": "EUR", "document_date": "2026-10-04", "due_date": null, "paid_at": null, "is_draft": false, "status": null, "cancel_id": null, "ref_id": null, "edited_at": "2026-10-04 16:30:00", "created_at": "2026-10-04 16:30:00"},
+    {"id": 7006, "type": "STORNO", "number": "ST-1", "title": "Storno", "customer_id": 502, "amount": -1000, "amount_net": -800, "document_date": "2026-10-04", "is_draft": false, "edited_at": "2026-10-04 17:00:00"}
+  ]
+}

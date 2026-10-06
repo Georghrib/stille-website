@@ -1,0 +1,29 @@
+{
+  "event": "document.create",
+  "data": {
+    "id": 7004,
+    "type": "CREDIT",
+    "number": "GS-2001",
+    "title": "Gutschrift Kulanz",
+    "customer_id": 502,
+    "amount": 24000,
+    "amount_net": 20000,
+    "currency": "EUR",
+    "document_date": "2026-10-02",
+    "due_date": null,
+    "paid_at": null,
+    "is_draft": false,
+    "status": null,
+    "cancel_id": null,
+    "ref_id": null,
+    "edited_at": "2026-10-02 11:00:00",
+    "created_at": "2026-10-02 11:00:00",
+    "customer_snapshot": {
+      "first_name": "Peter",
+      "last_name": "Novak",
+      "emails": [
+        "peter.novak@example.at"
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+.env
+storage/install.lock
+storage/pdfs/*
+storage/logs/*
+storage/cache/*
+!storage/pdfs/.gitkeep
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+dist/.env
+dist/storage/install.lock
+dist/storage/pdfs/*.pdf
+dist/storage/logs/*.log

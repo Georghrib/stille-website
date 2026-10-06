@@ -1,0 +1,52 @@
+# X-Solution CRM – public_html
+# Erlaubt sind nur: index.php (Router), install.php, cron.php, easybill-webhook.php und assets/.
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Versteckte Dateien (.env, .git, .htaccess ...) niemals ausliefern
+    RewriteRule (^|/)\. - [F,L]
+
+    # Statische Assets direkt ausliefern
+    RewriteRule ^assets/[A-Za-z0-9_\-/]+\.(css|js|svg|png|jpe?g|webp|ico|woff2?)$ - [L]
+
+    # Vorgesehene Einstiegsdateien
+    RewriteRule ^(index|install|cron|easybill-webhook)\.php$ - [L]
+
+    # Alle anderen existierenden Dateien sperren
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [F,L]
+
+    # Alles andere an den Router (schöne URLs wie /kunden/5)
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Zweite Verteidigungslinie, falls mod_rewrite fehlt
+<FilesMatch "\.(php\d?|phtml|phar|inc|sql|env|log|ini|lock|json|md|sh|bak|dist|example)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+<FilesMatch "^(index|install|cron|easybill-webhook)\.php$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Allow from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    <FilesMatch "\.(css|js|svg|woff2?)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+</IfModule>

@@ -1,0 +1,37 @@
+{
+  "event": "document.create",
+  "data": {
+    "id": 7001,
+    "type": "OFFER",
+    "number": "AN-4001",
+    "title": "Online-Reservierung & Website-Wartung",
+    "customer_id": 501,
+    "amount": 1440000,
+    "amount_net": 1200000,
+    "currency": "EUR",
+    "document_date": "2026-10-05",
+    "due_date": null,
+    "paid_at": null,
+    "is_draft": false,
+    "status": null,
+    "cancel_id": null,
+    "ref_id": null,
+    "edited_at": "2026-10-05 09:12:00",
+    "created_at": "2026-10-05 09:10:00",
+    "customer_snapshot": {
+      "company_name": "Gasthof Alpenrose",
+      "first_name": "Johanna",
+      "last_name": "Rainer",
+      "emails": [
+        "info@gasthof-alpenrose.at"
+      ]
+    },
+    "items": [
+      {
+        "description": "Website-Wartung 24 Monate",
+        "quantity": 24,
+        "single_price_net": 50000
+      }
+    ]
+  }
+}

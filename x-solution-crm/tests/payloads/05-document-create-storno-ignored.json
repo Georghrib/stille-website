@@ -1,0 +1,15 @@
+{
+  "event": "document.create",
+  "data": {
+    "id": 7006,
+    "type": "STORNO",
+    "number": "ST-1",
+    "title": "Storno",
+    "customer_id": 502,
+    "amount": -1000,
+    "amount_net": -800,
+    "document_date": "2026-10-04",
+    "is_draft": false,
+    "edited_at": "2026-10-04 17:00:00"
+  }
+}
