@@ -98,7 +98,7 @@ try {
 $form = [
     'name' => trim((string) ($_POST['name'] ?? '')),
     'email' => trim((string) ($_POST['email'] ?? '')),
-    'demo' => $isPost ? isset($_POST['demo']) : true,
+    'demo' => $isPost && isset($_POST['demo']),
 ];
 
 if ($isPost && ($_POST['action'] ?? '') === 'install' && $dbError === null) {

@@ -63,7 +63,7 @@ $errors ??= [];
         <label>E-Mail (Login)<input type="email" name="email" value="<?= e($form['email']) ?>" required></label>
         <label>Passwort (min. 10 Zeichen)<input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
         <label>Passwort wiederholen<input type="password" name="password_confirm" required minlength="10" autocomplete="new-password"></label>
-        <label class="check span-2"><input type="checkbox" name="demo" value="1" <?= $form['demo'] ? 'checked' : '' ?>> Demodaten anlegen (Beispielkunden, Verträge, Rechnungen – empfohlen zum Ausprobieren)</label>
+        <label class="check span-2"><input type="checkbox" name="demo" value="1" <?= $form['demo'] ? 'checked' : '' ?>> Demodaten anlegen (erfundene Beispielkunden, Verträge, Rechnungen – nur zum Ausprobieren)</label>
         <div class="span-2 form-actions"><button class="btn btn-primary" type="submit" <?= $dbError ? 'disabled' : '' ?>>Jetzt installieren</button></div>
     </form>
 <?php endif; ?>
