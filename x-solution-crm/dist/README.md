@@ -257,6 +257,7 @@ curl -X POST -H "Content-Type: application/json" \
 | `04-document-create-credit.json` | Gutschrift |
 | `05-document-create-storno-ignored.json` | Storno → wird ignoriert |
 | `06-document-deleted.json` | Dokument in easybill gelöscht |
+| `07-document-payment-add.json` | Zahlung erfasst (enthält nur `document_id`) → Dokument wird nachgeladen |
 
 **Abnahmetest** (Login, Dashboard und Diagramme, Webhook, Übernahme als Vertrag, Schutzmechanismen):
 

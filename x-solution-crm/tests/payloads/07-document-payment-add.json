@@ -1,0 +1,11 @@
+{
+  "event": "document.payment_add",
+  "data": {
+    "id": 99001,
+    "document_id": 7002,
+    "amount": 120000,
+    "payment_at": "2026-10-06",
+    "type": "UEBERWEISUNG",
+    "reference": "RE-5001"
+  }
+}

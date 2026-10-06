@@ -269,6 +269,14 @@ final class EasybillSync
         if (!is_array($doc) && isset($payload['id'], $payload['type'])) {
             $doc = $payload; // Dokument direkt als Payload
         }
+        // Zahlungs-Ereignisse liefern die Zahlung (mit document_id), nicht das Dokument
+        if (str_contains($event, 'payment') && is_array($doc)) {
+            $docId = (int) ($doc['document_id'] ?? 0);
+            if ($docId <= 0 || !$this->client) {
+                return ['message' => 'Zahlungs-Ereignis ohne Dokument-ID bzw. ohne API-Key – Abgleich per Cron', 'ignored' => true];
+            }
+            $doc = ['id' => $docId];
+        }
         if (!is_array($doc) || empty($doc['id'])) {
             return ['message' => 'Kein Dokument im Ereignis' . ($event ? ' (' . $event . ')' : ''), 'ignored' => true];
         }
