@@ -10,3 +10,5 @@ dist/.env
 dist/storage/install.lock
 dist/storage/pdfs/*.pdf
 dist/storage/logs/*.log
+storage/branding/
+dist/storage/branding/
