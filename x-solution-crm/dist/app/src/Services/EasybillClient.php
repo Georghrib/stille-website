@@ -12,6 +12,8 @@ use App\Core\Database;
 final class EasybillClient
 {
     private string $baseUrl;
+    /** Anfragen in diesem PHP-Prozess (Schutz vor dem Ratelimit, siehe config easybill.max_requests_per_run). */
+    private static int $requestCount = 0;
 
     public function __construct(private string $apiKey, ?string $baseUrl = null)
     {
@@ -42,7 +44,7 @@ final class EasybillClient
         $items = [];
         $page = 1;
         do {
-            $res = $this->documents($query + ['page' => $page, 'limit' => 100]);
+            $res = $this->documents($query + ['page' => $page, 'limit' => 1000]);
             array_push($items, ...$res['items']);
             $page++;
         } while ($page <= $res['pages'] && $page <= $maxPages);
@@ -72,6 +74,9 @@ final class EasybillClient
 
     public function request(string $method, string $path, array $query = [], bool $raw = false): mixed
     {
+        if (++self::$requestCount > (int) config('easybill.max_requests_per_run', 9)) {
+            throw new EasybillRateLimitException('Anfragelimit pro Lauf erreicht (easybill-Ratelimit) – der nächste Cron-Lauf macht weiter.');
+        }
         $url = $this->baseUrl . $path . ($query ? '?' . http_build_query($query) : '');
         $ch = curl_init($url);
         curl_setopt_array($ch, [

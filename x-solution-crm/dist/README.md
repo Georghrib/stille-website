@@ -170,7 +170,7 @@ Ohne korrektes Secret antwortet `cron.php` mit **HTTP 403**. Das Ergebnis jedes 
 | Rechnung mit Verweis (`ref_id`) auf ein importiertes Angebot | Es erscheint ein **Umstellungsvorschlag**. Erst nach deiner Bestätigung wird der Kunde aktiviert, der Vertrag angelegt bzw. aktiviert und beide Belege verknüpft |
 | Belegtyp Storno, Lieferschein usw. | wird ignoriert (importiert werden Angebote, Rechnungen, Gutschriften) |
 
-PDFs werden beim Import einmalig nach `storage/pdfs/` geladen und nur über `/easybill/{id}/pdf` nach Anmeldung ausgeliefert. Um das easybill-Ratelimit zu schonen, lädt der Cron höchstens 8 PDFs pro Lauf (einstellbar in `config/app.php`).
+PDFs werden beim Import einmalig nach `storage/pdfs/` geladen und nur über `/easybill/{id}/pdf` nach Anmeldung ausgeliefert. Um das easybill-Ratelimit zu schonen, stellt jeder Lauf höchstens 9 API-Anfragen und lädt höchstens 5 PDFs (PLUS-Tarif: 10 Anfragen pro Minute). Mit BUSINESS-Tarif (60 pro Minute) kannst du `max_requests_per_run` in `config/app.php` z. B. auf 50 erhöhen.
 
 ## 9. Bedienung im Überblick
 

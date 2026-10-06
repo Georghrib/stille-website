@@ -17,7 +17,11 @@ return [
         // Rückblick beim Cron-Abgleich über das Belegdatum (Tage vor dem letzten Lauf)
         'lookback_days' => 45,
         // Maximal neu geladene PDFs pro Cron-Lauf (Schutz vor dem easybill-Ratelimit)
-        'pdfs_per_run' => 8,
+        'pdfs_per_run' => 5,
+        // Höchstzahl API-Anfragen pro Aufruf (Webhook, Cron, manueller Abgleich).
+        // easybill erlaubt im Tarif PLUS 10 Anfragen/Minute, im Tarif BUSINESS 60.
+        // Bei BUSINESS kann der Wert z. B. auf 50 erhöht werden.
+        'max_requests_per_run' => 9,
     ],
 
     'contracts' => [
