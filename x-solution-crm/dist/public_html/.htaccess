@@ -1,7 +1,7 @@
 # X-Solution CRM – public_html
 # Erlaubt sind nur: index.php (Router), install.php, cron.php, easybill-webhook.php und assets/.
 
-Options -Indexes -MultiViews
+Options -Indexes
 DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
