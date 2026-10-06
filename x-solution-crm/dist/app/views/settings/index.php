@@ -63,6 +63,23 @@ $mask = fn (string $v) => $v === '' ? 'nicht gesetzt' : str_repeat('•', 8) . s
     </section>
 </div>
 
+<section class="card mb-20" id="erscheinungsbild">
+    <div class="card-head"><div><h2>Erscheinungsbild</h2><span class="sub">Logo und Name in der Seitenleiste, auf der Anmeldeseite und als Browser-Icon</span></div></div>
+    <?php $brand = App\Services\Branding::get(); ?>
+    <div class="brand-preview"><?= App\Services\Branding::html() ?></div>
+    <form method="post" action="<?= e(url('/einstellungen/branding')) ?>" enctype="multipart/form-data" class="form-grid">
+        <?= csrf_field() ?>
+        <label>Name neben dem Logo <span class="field-hint">leer lassen = nur Logo anzeigen</span>
+            <input name="brand_name" maxlength="40" value="<?= e($brand['name']) ?>">
+        </label>
+        <label>Neues Logo <span class="field-hint">PNG, JPG, WebP oder SVG · max. 1 MB · am besten quadratisch oder quer, transparenter Hintergrund</span>
+            <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        </label>
+        <?php if ($brand['logo']): ?><label class="check span-2"><input type="checkbox" name="remove_logo" value="1"> Eigenes Logo entfernen (Standard-Logo verwenden)</label><?php endif; ?>
+        <div class="span-2 form-actions"><button class="btn btn-primary" type="submit">Speichern</button></div>
+    </form>
+</section>
+
 <section class="card mb-20" id="benutzer">
     <div class="card-head"><h2>Benutzer</h2></div>
     <div class="table-wrap"><table class="table">

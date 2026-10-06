@@ -456,3 +456,7 @@ body.guest { display: grid; place-items: center; padding: 24px 16px; }
 .pw-inline { width: 150px; padding: 6px 10px; font-size: .8rem; }
 .alert-info a, .alert a { color: inherit; text-decoration: underline; }
 details.card summary { cursor: pointer; }
+
+.logo-img { max-height: 36px; max-width: 150px; width: auto; object-fit: contain; flex: none; }
+.guest-brand .logo-img { max-height: 48px; max-width: 220px; }
+.brand-preview { display: flex; align-items: center; gap: 10px; padding: 14px 16px; margin-bottom: 16px; border-radius: 12px; background: var(--sidebar); border: 1px solid var(--panel-line); font-weight: 700; font-size: 1.15rem; width: fit-content; max-width: 100%; }

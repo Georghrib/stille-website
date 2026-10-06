@@ -12,6 +12,9 @@ use App\Controllers\SearchController;
 use App\Controllers\SettingsController;
 use App\Controllers\TaskController;
 
+// Logo (öffentlich, wird auch auf der Login-Seite gebraucht)
+$router->get('/branding/logo', fn () => App\Services\Branding::serve(), 'guest');
+
 // Anmeldung
 $router->get('/login', [AuthController::class, 'showLogin'], 'guest');
 $router->post('/login', [AuthController::class, 'login'], 'guest');
@@ -66,6 +69,7 @@ $router->get('/umsatz/export', [RevenueController::class, 'export']);
 
 // Einstellungen
 $router->get('/einstellungen', [SettingsController::class, 'index']);
+$router->post('/einstellungen/branding', [SettingsController::class, 'branding'], 'admin');
 $router->post('/einstellungen/passwort', [SettingsController::class, 'password']);
 $router->post('/einstellungen/easybill', [SettingsController::class, 'easybill'], 'admin');
 $router->post('/einstellungen/easybill/test', [SettingsController::class, 'testConnection'], 'admin');

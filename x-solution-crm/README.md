@@ -184,7 +184,7 @@ PDFs werden beim Import einmalig nach `storage/pdfs/` geladen und nur über `/ea
 - **Aus easybill:** Posteingang mit Übernahmedialog (Interessent, Vertrag, Nur ablegen).
 - **Aufgaben:** Aufgaben und Termine mit Fälligkeit, Zuständigkeit und Kundenbezug.
 - **Umsatz:** Auswertung pro Jahr mit CSV-Export (Belege oder Monatssummen, Excel-kompatibel).
-- **Einstellungen:** eigenes Passwort, easybill-Zugang, Benutzerverwaltung, Synchronisationsprotokoll.
+- **Einstellungen:** eigenes Passwort, easybill-Zugang, **Erscheinungsbild** (eigenes Logo als PNG/JPG/WebP/SVG und Name, ohne neuen Upload per FTP), Benutzerverwaltung, Synchronisationsprotokoll.
 
 Umsatz bedeutet hier: Rechnungen netto abzüglich Gutschriften, ohne Entwürfe und stornierte Belege. Prognose und Vertragsbasis (MRR) kommen aus den aktiven Verträgen.
 

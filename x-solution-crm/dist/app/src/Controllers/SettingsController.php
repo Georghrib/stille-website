@@ -7,6 +7,7 @@ use App\Core\Auth;
 use App\Core\Database;
 use App\Core\Env;
 use App\Core\Settings;
+use App\Services\Branding;
 use App\Services\EasybillClient;
 
 final class SettingsController extends Controller
@@ -36,6 +37,28 @@ final class SettingsController extends Controller
             ];
         }
         $this->view('settings/index', $data);
+    }
+
+    /** Logo und Anzeigename (Einstellungen → Erscheinungsbild). */
+    public function branding(): void
+    {
+        $name = trim((string) ($_POST['brand_name'] ?? ''));
+        if (mb_strlen($name) > 40) {
+            flash('error', 'Der Name darf höchstens 40 Zeichen lang sein.');
+            redirect('/einstellungen#erscheinungsbild');
+        }
+        Settings::set('brand_name', $name);
+        try {
+            if (!empty($_POST['remove_logo'])) {
+                Branding::removeLogo();
+            } elseif (($_FILES['logo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                Branding::storeUpload($_FILES['logo']);
+            }
+            flash('success', 'Erscheinungsbild gespeichert.');
+        } catch (\RuntimeException $e) {
+            flash('error', $e->getMessage());
+        }
+        redirect('/einstellungen#erscheinungsbild');
     }
 
     public function password(): void

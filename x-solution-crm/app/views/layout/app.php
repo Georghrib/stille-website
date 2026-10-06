@@ -28,8 +28,8 @@ $nav = [
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="<?= e(App\Core\Csrf::token()) ?>">
-    <title><?= e(($pageTitle ?? '') !== '' ? $pageTitle . ' · ' : '') ?>X-Solution CRM</title>
-    <link rel="icon" href="<?= e(asset('img/favicon.svg')) ?>" type="image/svg+xml">
+    <title><?= e(($pageTitle ?? '') !== '' ? $pageTitle . ' · ' : '') ?><?= e(App\Services\Branding::name() ?: 'CRM') ?></title>
+    <?= App\Services\Branding::faviconTag() ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -43,8 +43,7 @@ $nav = [
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <a class="logo" href="<?= e(url('/')) ?>">
-            <span class="logo-mark"><?= icon('logo') ?></span>
-            <span class="logo-text">X-Solution</span>
+            <?= App\Services\Branding::html() ?>
         </a>
         <nav class="nav" aria-label="Hauptnavigation">
             <?php foreach ($nav as [$href, $label, $ic, $count]): ?>
