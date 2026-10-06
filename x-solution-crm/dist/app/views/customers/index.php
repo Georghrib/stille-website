@@ -41,8 +41,13 @@
             <?php foreach ($rows as $r): ?>
                 <tr>
                     <td>
-                        <a class="row-link" href="<?= e(url('/kunden/' . $r['id'])) ?>"><?= e($r['name']) ?></a>
-                        <span class="cell-sub"><?= e($r['contact_person'] ?: ($r['email'] ?: '–')) ?></span>
+                        <div class="cell-with-avatar">
+                            <?= App\Services\CustomerLogo::avatar($r, 'avatar avatar-sm') ?>
+                            <div>
+                                <a class="row-link" href="<?= e(url('/kunden/' . $r['id'])) ?>"><?= e($r['name']) ?></a>
+                                <span class="cell-sub"><?= e($r['contact_person'] ?: ($r['email'] ?: '–')) ?></span>
+                            </div>
+                        </div>
                     </td>
                     <td><?= badge($r['status'], customer_status_label($r['status'])) ?></td>
                     <td class="table-hide-sm"><?= e(trim(($r['zip'] ?? '') . ' ' . ($r['city'] ?? '')) ?: '–') ?></td>

@@ -6,7 +6,7 @@ $c = $customer;
 <div class="page-head">
     <div>
         <div class="crumbs"><a href="<?= e(url('/kunden')) ?>">Kunden</a> / <?= e($c['name']) ?></div>
-        <h1><?= e($c['name']) ?> <?= badge($c['status'], customer_status_label($c['status'])) ?></h1>
+        <h1 class="title-with-logo"><?= App\Services\CustomerLogo::avatar($c, 'avatar avatar-lg') ?><span><?= e($c['name']) ?> <?= badge($c['status'], customer_status_label($c['status'])) ?></span></h1>
     </div>
     <div class="actions">
         <a class="btn" href="<?= e(url('/kunden/' . $c['id'] . '/bearbeiten')) ?>"><?= icon('edit') ?> Bearbeiten</a>
@@ -63,6 +63,19 @@ $c = $customer;
                 <dt>easybill-ID</dt><dd><?= e($c['easybill_customer_id'] ?? '–') ?></dd>
                 <dt>Angelegt</dt><dd><?= date_de($c['created_at']) ?></dd>
             </dl>
+            <form method="post" action="<?= e(url('/kunden/' . $c['id'] . '/logo')) ?>" enctype="multipart/form-data" class="logo-upload mt-14">
+                <?= csrf_field() ?>
+                <label>Kundenlogo <span class="field-hint">PNG, JPG, WebP oder SVG · max. 1 MB</span>
+                    <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" required>
+                </label>
+                <button class="btn btn-sm" type="submit">Logo hochladen</button>
+            </form>
+            <?php if (App\Services\CustomerLogo::file((int) $c['id'])): ?>
+            <form method="post" action="<?= e(url('/kunden/' . $c['id'] . '/logo')) ?>" class="mt-14" data-confirm="Logo entfernen?">
+                <?= csrf_field() ?><input type="hidden" name="remove_logo" value="1">
+                <button class="btn btn-ghost btn-sm" type="submit"><?= icon('trash') ?> Logo entfernen</button>
+            </form>
+            <?php endif; ?>
         </section>
 
         <section class="card">

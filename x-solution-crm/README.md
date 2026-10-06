@@ -179,7 +179,7 @@ PDFs werden beim Import einmalig nach `storage/pdfs/` geladen und nur über `/ea
 ## 9. Bedienung im Überblick
 
 - **Dashboard:** Monats- und Jahresumsatz, aktive Kunden und Ø Vertragslaufzeit, jeweils mit Veränderung zum Vorzeitraum. Dazu Umsatzentwicklung über 12 Monate, Vertragslaufzeiten, aktive Verträge, Vertragsstatus, Umsatzprognose für den Folgemonat, offene Opportunities, der easybill-Posteingang sowie Erinnerungen und Verlängerungen. Der **Zeitraumfilter** oben wählt den Bezugsmonat.
-- **Kunden:** Suche, Status (Interessent/Kunde/Inaktiv) und Detailseite mit Verträgen, Belegen, Notizen und Terminen.
+- **Kunden:** Suche, Status (Interessent/Kunde/Inaktiv), Kundenlogo (Upload auf der Detailseite, gespeichert in `storage/customer-logos/`) und Detailseite mit Verträgen, Belegen, Notizen und Terminen.
 - **Verträge:** Liste mit Filtern, Detail, Anlegen und Bearbeiten, Kündigung erfassen. Der Monatswert wird aus Gesamtwert und Laufzeit vorgeschlagen.
 - **Aus easybill:** Posteingang mit Übernahmedialog (Interessent, Vertrag, Nur ablegen).
 - **Aufgaben:** Aufgaben und Termine mit Fälligkeit, Zuständigkeit und Kundenbezug.

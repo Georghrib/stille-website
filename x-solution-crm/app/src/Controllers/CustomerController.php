@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Services\CustomerLogo;
 
 final class CustomerController extends Controller
 {
@@ -117,8 +118,31 @@ final class CustomerController extends Controller
             Database::run("UPDATE easybill_documents SET customer_id = NULL, contract_id = NULL, inbox_state = 'neu', suggestion = NULL WHERE customer_id = ?", [$id]);
             Database::run('DELETE FROM customers WHERE id = ?', [$id]);
         });
+        CustomerLogo::remove($id);
         flash('success', 'Kunde „' . $customer['name'] . '“ wurde gelöscht. Zugehörige easybill-Belege liegen wieder im Posteingang.');
         redirect('/kunden');
+    }
+
+    public function logo(int $id): void
+    {
+        CustomerLogo::serve($id);
+    }
+
+    public function uploadLogo(int $id): void
+    {
+        Database::one('SELECT id FROM customers WHERE id = ?', [$id]) ?? $this->notFound('Kunde');
+        try {
+            if (!empty($_POST['remove_logo'])) {
+                CustomerLogo::remove($id);
+                flash('success', 'Logo entfernt.');
+            } else {
+                CustomerLogo::store($id, $_FILES['logo'] ?? []);
+                flash('success', 'Logo gespeichert.');
+            }
+        } catch (\RuntimeException $e) {
+            flash('error', $e->getMessage());
+        }
+        redirect('/kunden/' . $id);
     }
 
     /** @return array{0: array<string,mixed>, 1: array<string,string>} */

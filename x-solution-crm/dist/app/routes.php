@@ -32,6 +32,8 @@ $router->get('/kunden/{id}', [CustomerController::class, 'show']);
 $router->get('/kunden/{id}/bearbeiten', [CustomerController::class, 'edit']);
 $router->post('/kunden/{id}', [CustomerController::class, 'update']);
 $router->post('/kunden/{id}/loeschen', [CustomerController::class, 'destroy']);
+$router->get('/kunden/{id}/logo', [CustomerController::class, 'logo']);
+$router->post('/kunden/{id}/logo', [CustomerController::class, 'uploadLogo']);
 
 // Notizen
 $router->post('/kunden/{id}/notizen', [NoteController::class, 'store']);

@@ -18,7 +18,7 @@
         <ul class="list">
             <?php foreach ($customers as $c): ?>
                 <li class="list-item">
-                    <span class="avatar"><?= e(initials($c['name'])) ?></span>
+                    <?= App\Services\CustomerLogo::avatar($c) ?>
                     <div class="grow"><a class="title" href="<?= e(url('/kunden/' . $c['id'])) ?>"><?= e($c['name']) ?></a><span class="meta"><?= e(implode(' · ', array_filter([$c['contact_person'], $c['email'], $c['city']]))) ?></span></div>
                     <?= badge($c['status'], customer_status_label($c['status'])) ?>
                 </li>

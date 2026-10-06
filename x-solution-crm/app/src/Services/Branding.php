@@ -78,18 +78,8 @@ final class Branding
      */
     public static function storeUpload(array $file): void
     {
-        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string) $file['tmp_name'])) {
-            throw new \RuntimeException(match ($file['error'] ?? null) {
-                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Die Datei ist zu groß (max. 1 MB).',
-                UPLOAD_ERR_NO_FILE => 'Bitte eine Datei auswählen.',
-                default => 'Der Upload ist fehlgeschlagen.',
-            });
-        }
-        if ((int) $file['size'] > self::MAX_BYTES) {
-            throw new \RuntimeException('Die Datei ist zu groß (max. 1 MB).');
-        }
-        $bytes = (string) file_get_contents((string) $file['tmp_name']);
-        $mime = self::detect($bytes);
+        $bytes = self::readUpload($file);
+        $mime = self::detectImage($bytes);
         if ($mime === null) {
             throw new \RuntimeException('Bitte ein Bild im Format PNG, JPG, WebP oder SVG hochladen.');
         }
@@ -110,6 +100,25 @@ final class Branding
         self::$cache = null;
     }
 
+    /**
+     * Prüft einen Datei-Upload (Fehler, Größe) und liefert den Inhalt.
+     * @throws \RuntimeException
+     */
+    public static function readUpload(array $file): string
+    {
+        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string) $file['tmp_name'])) {
+            throw new \RuntimeException(match ($file['error'] ?? null) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Die Datei ist zu groß (max. 1 MB).',
+                UPLOAD_ERR_NO_FILE => 'Bitte eine Datei auswählen.',
+                default => 'Der Upload ist fehlgeschlagen.',
+            });
+        }
+        if ((int) $file['size'] > self::MAX_BYTES) {
+            throw new \RuntimeException('Die Datei ist zu groß (max. 1 MB).');
+        }
+        return (string) file_get_contents((string) $file['tmp_name']);
+    }
+
     public static function removeLogo(): void
     {
         foreach (glob(STORAGE_PATH . '/branding/logo.*') ?: [] as $old) {
@@ -121,7 +130,7 @@ final class Branding
     }
 
     /** Erkennt den Bildtyp am Inhalt (nicht an der Dateiendung). */
-    private static function detect(string $bytes): ?string
+    public static function detectImage(string $bytes): ?string
     {
         if (str_starts_with($bytes, "\x89PNG\r\n\x1a\n")) {
             return 'image/png';

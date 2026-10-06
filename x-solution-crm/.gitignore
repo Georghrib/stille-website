@@ -12,3 +12,5 @@ dist/storage/pdfs/*.pdf
 dist/storage/logs/*.log
 storage/branding/
 dist/storage/branding/
+storage/customer-logos/
+dist/storage/customer-logos/
