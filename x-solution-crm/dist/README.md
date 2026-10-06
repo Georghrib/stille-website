@@ -156,7 +156,8 @@ Ohne korrektes Secret antwortet `cron.php` mit **HTTP 403**. Das Ergebnis jedes 
    Alternativ trägst du ihn direkt in der `.env` bei `EASYBILL_API_KEY=` ein.
 2. **Verbindung testen** klicken.
 3. **Webhook:** In easybill einen Webhook anlegen. Ziel-URL ist die in den Einstellungen angezeigte Adresse
-   `https://crm.example.at/easybill-webhook.php?secret=DEIN_WEBHOOK_SECRET`, als Ereignisse Dokument erstellt, geändert und gelöscht.
+   `https://crm.example.at/easybill-webhook.php?secret=DEIN_WEBHOOK_SECRET`. In das Pflichtfeld **Secret** denselben Wert wie hinter `?secret=` eintragen, Content-Type `application/json`.
+   Ereignisse: `document.create`, `document.update`, `document.completed`, `document.deleted`, `document.payment_add`, `document.payment_delete` sowie unter **Kontakt** `customer.create`, `customer.update`, `customer.delete`. Ansprechpartner- und Positions-Ereignisse werden nicht benötigt.
    Der Empfänger prüft das Secret (sonst HTTP 403), speichert das Ereignis, antwortet sofort mit HTTP 200 und verarbeitet es danach.
 4. Unter **Aus easybill → Jetzt abgleichen** kannst du sofort einen ersten Abgleich starten. Beim ersten Lauf werden die Belege der letzten 12 Monate geholt.
 
@@ -165,10 +166,13 @@ Ohne korrektes Secret antwortet `cron.php` mit **HTTP 403**. Das Ergebnis jedes 
 | Situation | Ergebnis |
 |---|---|
 | easybill-ID schon bekannt | Datensatz wird aktualisiert, es entsteht kein Duplikat |
-| easybill-Kunden-ID oder E-Mail passt zu einem CRM-Kunden | Beleg wird automatisch diesem Kunden zugeordnet |
-| Kein Treffer | Beleg landet im Posteingang **Aus easybill** |
+| Kunde hat im CRM bereits einen laufenden Vertrag | Beleg wird still diesem Kunden zugeordnet |
+| Kunde ist bekannt (z. B. aus easybill importierter Kontakt), aber ohne Vertrag | Beleg landet im Posteingang **Aus easybill**, der Kunde ist im Dialog vorausgewählt |
+| Kein Treffer (easybill-Kunden-ID, ersatzweise E-Mail) | Beleg landet im Posteingang **Aus easybill** |
 | Rechnung mit Verweis (`ref_id`) auf ein importiertes Angebot | Es erscheint ein **Umstellungsvorschlag**. Erst nach deiner Bestätigung wird der Kunde aktiviert, der Vertrag angelegt bzw. aktiviert und beide Belege verknüpft |
 | Belegtyp Storno, Lieferschein usw. | wird ignoriert (importiert werden Angebote, Rechnungen, Gutschriften) |
+
+**Kontakte:** easybill-Kunden werden als CRM-Kunden übernommen (neu mit Status „Interessent“), per Webhook sofort und zusätzlich stündlich per Cron. Stammdaten (Name, Adresse, E-Mail, Telefon, UID) werden aus easybill aktualisiert, der CRM-Status bleibt unverändert. Wird ein Kontakt in easybill gelöscht, bleibt der CRM-Kunde erhalten und bekommt eine Notiz. Abschalten lässt sich der Kontakt-Import mit `import_customers => false` in `config/app.php`.
 
 PDFs werden beim Import einmalig nach `storage/pdfs/` geladen und nur über `/easybill/{id}/pdf` nach Anmeldung ausgeliefert. Um das easybill-Ratelimit zu schonen, stellt jeder Lauf höchstens 9 API-Anfragen und lädt höchstens 5 PDFs (PLUS-Tarif: 10 Anfragen pro Minute). Mit BUSINESS-Tarif (60 pro Minute) kannst du `max_requests_per_run` in `config/app.php` z. B. auf 50 erhöhen.
 
@@ -258,6 +262,9 @@ curl -X POST -H "Content-Type: application/json" \
 | `05-document-create-storno-ignored.json` | Storno → wird ignoriert |
 | `06-document-deleted.json` | Dokument in easybill gelöscht |
 | `07-document-payment-add.json` | Zahlung erfasst (enthält nur `document_id`) → Dokument wird nachgeladen |
+| `08-customer-create.json` | Neuer easybill-Kontakt → CRM-Kunde (Interessent) |
+| `09-customer-update-id-only.json` | Kontakt-Änderung nur mit ID → wird per API nachgeladen |
+| `10-customer-delete.json` | Kontakt in easybill gelöscht → Notiz beim CRM-Kunden |
 
 **Abnahmetest** (Login, Dashboard und Diagramme, Webhook, Übernahme als Vertrag, Schutzmechanismen):
 

@@ -1,0 +1,17 @@
+{
+  "event": "customer.create",
+  "data": {
+    "id": 501,
+    "number": "K-501",
+    "company_name": "Gasthof Alpenrose",
+    "first_name": "Johanna",
+    "last_name": "Rainer",
+    "emails": ["info@gasthof-alpenrose.at"],
+    "phone_1": "+43 5412 63 210",
+    "street": "Dorfplatz 5",
+    "zip_code": "6460",
+    "city": "Imst",
+    "country": "AT",
+    "vat_identifier": "ATU12345678"
+  }
+}

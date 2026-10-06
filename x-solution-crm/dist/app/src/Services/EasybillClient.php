@@ -51,6 +51,20 @@ final class EasybillClient
         return $items;
     }
 
+    /** Alle easybill-Kunden (seitenweise, je 1000). */
+    public function allCustomers(int $maxPages = 10): array
+    {
+        $items = [];
+        $page = 1;
+        do {
+            $res = $this->request('GET', '/customers', ['page' => $page, 'limit' => 1000]);
+            array_push($items, ...($res['items'] ?? []));
+            $pages = (int) ($res['pages'] ?? 1);
+            $page++;
+        } while ($page <= $pages && $page <= $maxPages);
+        return $items;
+    }
+
     public function document(int $id): array
     {
         return $this->request('GET', '/documents/' . $id);

@@ -254,9 +254,10 @@ final class EasybillController extends Controller
         $sync = new EasybillSync($client);
         try {
             $w = $sync->processPendingWebhooks();
+            $k = $sync->syncCustomers(true);
             $s = $sync->syncChanged();
             $p = $sync->downloadMissingPdfs(5);
-            flash('success', sprintf('Abgleich abgeschlossen: %d geprüft, %d neu, %d aktualisiert · %d Webhooks nachgeholt · %d PDFs geladen.', $s['geprueft'], $s['neu'], $s['aktualisiert'], $w['ok'], $p));
+            flash('success', sprintf('Abgleich abgeschlossen: %d Belege geprüft, %d neu, %d aktualisiert · %d Kontakte (%d neu) · %d Webhooks nachgeholt · %d PDFs geladen.', $s['geprueft'], $s['neu'], $s['aktualisiert'], $k['geprueft'] ?? 0, $k['neu'] ?? 0, $w['ok'], $p));
         } catch (\Throwable $e) {
             flash('error', 'Abgleich fehlgeschlagen: ' . $e->getMessage());
         }

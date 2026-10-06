@@ -66,7 +66,7 @@ final class EasybillSync
                 // Zuordnung nachholen, falls inzwischen ein passender Kunde existiert
                 if (!$existing['customer_id'] && ($cid = $this->matchCustomer($ebCustomerId, $email))) {
                     $update['customer_id'] = $cid;
-                    if ($existing['inbox_state'] === 'neu') {
+                    if ($existing['inbox_state'] === 'neu' && self::hasActiveContract($cid)) {
                         $update['inbox_state'] = 'zugeordnet';
                     }
                 }
@@ -78,7 +78,9 @@ final class EasybillSync
             $row = $fields + [
                 'easybill_id' => $ebId,
                 'customer_id' => $customerId,
-                'inbox_state' => $customerId ? 'zugeordnet' : 'neu',
+                // Bestandskunde mit laufendem Vertrag: still zuordnen. Sonst (neuer Kunde,
+                // Interessent oder aus easybill importierter Kontakt) im Posteingang entscheiden.
+                'inbox_state' => $customerId && self::hasActiveContract($customerId) ? 'zugeordnet' : 'neu',
             ];
 
             // Angebot → Rechnung?
@@ -120,6 +122,95 @@ final class EasybillSync
         }
         Database::update('easybill_documents', (int) $row['id'], ['status' => 'geloescht', 'suggestion' => null]);
         return 'als gelöscht markiert';
+    }
+
+    public static function hasActiveContract(int $customerId): bool
+    {
+        return (bool) Database::value("SELECT 1 FROM contracts WHERE customer_id = ? AND status IN ('aktiv','gekuendigt') LIMIT 1", [$customerId]);
+    }
+
+    /* ======================= Kontakte (easybill-Kunden) ======================= */
+
+    /**
+     * Legt einen easybill-Kunden im CRM an bzw. aktualisiert ihn.
+     * Zuordnung über easybill-ID, ersatzweise E-Mail. Neue Kontakte erhalten den Status "Interessent".
+     * Stammdaten werden nur mit nicht-leeren easybill-Werten überschrieben; der CRM-Status bleibt unverändert.
+     *
+     * @return array{id:int, action:string}|null
+     */
+    public function importCustomer(array $c): ?array
+    {
+        $ebId = (int) ($c['id'] ?? 0);
+        $name = self::customerName($c);
+        if ($ebId <= 0 || $name === null) {
+            return null;
+        }
+        $emails = $c['emails'] ?? [];
+        $email = is_array($emails) ? ($emails[0] ?? null) : (is_string($emails) ? $emails : null);
+        $email = is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL) ? mb_strtolower($email) : null;
+        $person = trim(trim((string) ($c['first_name'] ?? '')) . ' ' . trim((string) ($c['last_name'] ?? '')));
+        $country = strtoupper(substr((string) ($c['country'] ?? ''), 0, 2));
+        $data = array_filter([
+            'name' => mb_substr($name, 0, 190),
+            'contact_person' => trim((string) ($c['company_name'] ?? '')) !== '' && $person !== '' ? mb_substr($person, 0, 190) : null,
+            'email' => $email,
+            'phone' => self::str($c['phone_1'] ?? $c['mobile'] ?? $c['phone_2'] ?? null, 60),
+            'street' => self::str($c['street'] ?? null, 190),
+            'zip' => self::str($c['zip_code'] ?? null, 20),
+            'city' => self::str($c['city'] ?? null, 120),
+            'country' => preg_match('/^[A-Z]{2}$/', $country) ? $country : null,
+            'vat_id' => self::str($c['vat_identifier'] ?? null, 40),
+        ], fn ($v) => $v !== null && $v !== '');
+
+        $existingId = Database::value('SELECT id FROM customers WHERE easybill_customer_id = ?', [$ebId]);
+        if (!$existingId && $email) {
+            $existingId = Database::value('SELECT id FROM customers WHERE LOWER(email) = ? AND easybill_customer_id IS NULL ORDER BY id LIMIT 1', [$email]);
+        }
+        if ($existingId) {
+            Database::update('customers', (int) $existingId, $data + ['easybill_customer_id' => $ebId]);
+            $id = (int) $existingId;
+            $action = 'aktualisiert';
+        } else {
+            $id = Database::insert('customers', $data + ['status' => 'interessent', 'easybill_customer_id' => $ebId, 'country' => $data['country'] ?? 'AT']);
+            $action = 'neu';
+        }
+        // Bereits importierte, noch nicht zugeordnete Belege dieses Kunden verknüpfen
+        // (sie bleiben im Posteingang, bis entschieden ist: Interessent oder Vertrag)
+        Database::run('UPDATE easybill_documents SET customer_id = ? WHERE customer_id IS NULL AND easybill_customer_id = ?', [$id, $ebId]);
+        return ['id' => $id, 'action' => $action];
+    }
+
+    /** Kontakt in easybill gelöscht: CRM-Kunde bleibt erhalten, es wird nur eine Notiz angelegt. */
+    private function customerDeleted(int $ebId): string
+    {
+        $id = Database::value('SELECT id FROM customers WHERE easybill_customer_id = ?', [$ebId]);
+        if (!$id) {
+            return 'Kontakt ' . $ebId . ' in easybill gelöscht (im CRM nicht vorhanden)';
+        }
+        Database::insert('notes', ['customer_id' => (int) $id, 'body' => 'Hinweis: Dieser Kontakt wurde in easybill gelöscht (easybill-ID ' . $ebId . '). Der CRM-Datensatz bleibt erhalten.']);
+        return 'Kontakt ' . $ebId . ' in easybill gelöscht – Notiz beim CRM-Kunden angelegt';
+    }
+
+    /** Alle easybill-Kunden abgleichen (Cron, höchstens stündlich). */
+    public function syncCustomers(bool $force = false): array
+    {
+        if (!$this->client || !config('easybill.import_customers', true)) {
+            return ['skipped' => true];
+        }
+        $last = Settings::get('easybill_last_customer_sync');
+        if (!$force && $last && strtotime($last) > time() - 3600) {
+            return ['skipped' => true];
+        }
+        $stats = ['geprueft' => 0, 'neu' => 0, 'aktualisiert' => 0];
+        foreach ($this->client->allCustomers() as $c) {
+            $stats['geprueft']++;
+            $res = $this->importCustomer($c);
+            if ($res) {
+                $stats[$res['action']]++;
+            }
+        }
+        Settings::set('easybill_last_customer_sync', date('Y-m-d H:i:s'));
+        return $stats;
     }
 
     public function matchCustomer(?int $ebCustomerId, ?string $email): ?int
@@ -265,6 +356,12 @@ final class EasybillSync
     public function handleWebhookPayload(array $payload): array
     {
         $event = strtolower((string) ($payload['event'] ?? $payload['type_event'] ?? $payload['action'] ?? ''));
+        if (str_starts_with($event, 'customer.')) {
+            return $this->handleCustomerEvent($event, $payload);
+        }
+        if (str_starts_with($event, 'contact.') || str_starts_with($event, 'position.')) {
+            return ['message' => 'Ereignis ' . $event . ' wird nicht verarbeitet', 'ignored' => true];
+        }
         $doc = $payload['data']['document'] ?? $payload['data'] ?? $payload['document'] ?? null;
         if (!is_array($doc) && isset($payload['id'], $payload['type'])) {
             $doc = $payload; // Dokument direkt als Payload
@@ -305,6 +402,27 @@ final class EasybillSync
             }
         }
         return ['message' => $msg, 'ignored' => false];
+    }
+
+    /** @return array{message:string, ignored:bool} */
+    private function handleCustomerEvent(string $event, array $payload): array
+    {
+        $c = $payload['data']['customer'] ?? $payload['data'] ?? $payload['customer'] ?? null;
+        if (!is_array($c) || empty($c['id'])) {
+            return ['message' => 'Kein Kontakt im Ereignis (' . $event . ')', 'ignored' => true];
+        }
+        $ebId = (int) $c['id'];
+        if (str_contains($event, 'delete')) {
+            return ['message' => $this->customerDeleted($ebId), 'ignored' => false];
+        }
+        if (self::customerName($c) === null && $this->client) {
+            $c = $this->client->customer($ebId); // nur ID geliefert → nachladen
+        }
+        $res = $this->importCustomer($c);
+        if ($res === null) {
+            return ['message' => 'Kontakt ' . $ebId . ' ohne Namen – übersprungen', 'ignored' => true];
+        }
+        return ['message' => 'Kontakt ' . (self::customerName($c) ?? $ebId) . ' ' . $res['action'], 'ignored' => false];
     }
 
     public function processPendingWebhooks(int $limit = 50): array

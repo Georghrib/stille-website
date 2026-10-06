@@ -22,6 +22,8 @@ return [
         // easybill erlaubt im Tarif PLUS 10 Anfragen/Minute, im Tarif BUSINESS 60.
         // Bei BUSINESS kann der Wert z. B. auf 50 erhöht werden.
         'max_requests_per_run' => 9,
+        // easybill-Kontakte (Kunden) ins CRM übernehmen: per Webhook customer.* und stündlich per Cron
+        'import_customers' => true,
     ],
 
     'contracts' => [

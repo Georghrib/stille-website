@@ -5,6 +5,7 @@
  *   CLI:   php /pfad/zum/domain-ordner/public_html/cron.php
  *
  * 1. nicht verarbeitete Webhook-Ereignisse nachholen
+ * 1b. easybill-Kontakte abgleichen (höchstens stündlich)
  * 2. geänderte Dokumente bei easybill abfragen (Sicherheitsnetz)
  * 3. fehlende PDFs laden (begrenzt pro Lauf)
  * 4. abgelaufene Verträge auf "beendet" setzen
@@ -65,6 +66,11 @@ $sync = new EasybillSync(EasybillClient::fromEnv());
 try {
     $w = $sync->processPendingWebhooks();
     $out[] = sprintf('Webhooks nachverarbeitet: %d ok, %d Fehler', $w['ok'], $w['failed']);
+
+    $k = $sync->syncCustomers();
+    if (empty($k['skipped'])) {
+        $out[] = sprintf('Kontakte: %d geprüft, %d neu, %d aktualisiert', $k['geprueft'], $k['neu'], $k['aktualisiert']);
+    }
 
     $s = $sync->syncChanged();
     $out[] = isset($s['skipped'])

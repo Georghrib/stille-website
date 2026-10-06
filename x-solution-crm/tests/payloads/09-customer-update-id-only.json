@@ -1,0 +1,4 @@
+{
+  "event": "customer.update",
+  "data": {"id": 502}
+}
